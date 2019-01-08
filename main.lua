@@ -1,15 +1,33 @@
-game_status = "pause"
+game_status = {
+	action = "pause",
+	menu = nil
+}
 
 game_board = {}
 
-for row = 1, love.graphics.getWidth() / 16 do
-	game_board[row] = {}
-	for column = 1, love.graphics.getHeight() / 16 do
-		if row == 1 then
-			game_board[row][column] = "fire"
-		else
-			game_board[row][column] = "empty"
+function love.keypressed(key)
+	if key == "escape" then
+		if game_status.action == "pause" then
+			game_status.action = "play"
+		elseif game_status.action == "play" then
+			game_status.action = "pause"
 		end
+	elseif key == "return" then
+		if game_status.action == "quit" then
+			love.event.quit()
+		end
+	end
+end
+
+function love.quit()
+	-- deal with the player trying to quit the game
+	if game_status.action ~= "quit" then
+		-- don't quit
+		game_status.action = "quit"
+		return true
+	elseif game_status.action == "quit" then
+		-- completely quit the game
+		return false
 	end
 end
 
@@ -20,17 +38,21 @@ function love.load()
 	fire = love.graphics.newImage("assets/fire.png")
 	earth = love.graphics.newImage("assets/earth.png")
 	water = love.graphics.newImage("assets/water.png")
-end
-
-function love.keypressed(key)
-	if key == "p" then
-		if game_status == "pause" then
-			game_status = "play"
-		elseif game_status == "play" then
-			game_status = "pause"
+	
+	for row = 1, love.graphics.getWidth() / 16 do
+		game_board[row] = {}
+		for column = 1, love.graphics.getHeight() / 16 do
+			if row == 1 then
+				game_board[row][column] = "fire"
+			elseif row == 2 then
+				game_board[row][column] = "water"
+			else
+				game_board[row][column] = "empty"
+			end
 		end
 	end
 end
+
 
 function love.update(dt)
 	if game_status == "play" then
@@ -57,9 +79,9 @@ function love.draw()
 	love.graphics.setColor(255, 255, 255, 255)
 	
 	
-	if game_status == "play" then
+	if game_status.action == "play" then
 		screen = {255, 255, 255, 255}
-	elseif game_status == "pause" then
+	elseif game_status.action == "pause" or game_status.action == "quit" then
 		screen = {128, 128, 128, 255}
 	end
 	
@@ -85,7 +107,9 @@ function love.draw()
 		end
 	end
 	
-	if game_status == "pause" then
-		love.graphics.printf( { {255, 255, 255, 255}, "G A M E   P A U S E D" }, 0, 112, (love.graphics.getWidth()), "center")
+	if game_status.action == "pause" then
+		love.graphics.printf( { {255, 255, 255, 255}, "S I M U L A T I O N   P A U S E D" }, 0, 112, (love.graphics.getWidth()), "center")
+	elseif game_status.action == "quit" then
+		love.graphics.printf( { {255, 255, 255, 255}, "QUIT GAME?" }, 0, 112, (love.graphics.getWidth()), "center")
 	end
 end
