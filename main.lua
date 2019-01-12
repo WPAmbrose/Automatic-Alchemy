@@ -1,5 +1,6 @@
 game_status = {
-	action = "pause",
+	menu = "none",
+	action = nil,
 	selected_menu_item = 1,
 	selector_x = 1,
 	selector_y = 1,
@@ -24,48 +25,52 @@ graphics = {
 
 
 function love.keypressed(key)
-	if game_status.action == "edit" then
-		if key == "escape" then
-			game_status.action = "pause"
-		elseif key == "up" then
-			if game_status.selector_y > 1 then
-				game_status.selector_y = game_status.selector_y - 1
-			elseif game_status.selector_y <= 1 then
-				game_status.selector_y = game_status.grid_size_y
+	if game_status.menu == "none" then
+		if game_status.action == "edit" then
+			if key == "escape" then
+				game_status.menu = "pause"
+			elseif key == "up" then
+				if game_status.selector_y > 1 then
+					game_status.selector_y = game_status.selector_y - 1
+				elseif game_status.selector_y <= 1 then
+					game_status.selector_y = game_status.grid_size_y
+				end
+			elseif key == "down" then
+				if game_status.selector_y < game_status.grid_size_y then
+					game_status.selector_y = game_status.selector_y + 1
+				elseif game_status.selector_y >= game_status.grid_size_y then
+					game_status.selector_y = 1
+				end
+			elseif key == "left" then
+				if game_status.selector_x > 1 then
+					game_status.selector_x = game_status.selector_x - 1
+				elseif game_status.selector_x <= 1 then
+					game_status.selector_x = game_status.grid_size_x
+				end
+			elseif key == "right" then
+				if game_status.selector_x < game_status.grid_size_x then
+					game_status.selector_x = game_status.selector_x + 1
+				elseif game_status.selector_x >= game_status.grid_size_x then
+					game_status.selector_x = 1
+				end
+			elseif key == "space" then
+				print(game_board[game_status.selector_x][game_status.selector_y].element)
 			end
-		elseif key == "down" then
-			if game_status.selector_y < game_status.grid_size_y then
-				game_status.selector_y = game_status.selector_y + 1
-			elseif game_status.selector_y >= game_status.grid_size_y then
-				game_status.selector_y = 1
-			end
-		elseif key == "left" then
-			if game_status.selector_x > 1 then
-				game_status.selector_x = game_status.selector_x - 1
-			elseif game_status.selector_x <= 1 then
-				game_status.selector_x = game_status.grid_size_x
-			end
-		elseif key == "right" then
-			if game_status.selector_x < game_status.grid_size_x then
-				game_status.selector_x = game_status.selector_x + 1
-			elseif game_status.selector_x >= game_status.grid_size_x then
-				game_status.selector_x = 1
+		elseif game_status.action == "live" then
+			if key == "escape" then
+				game_status.menu = "pause"
 			end
 		end
-	elseif game_status.action == "live" then
-		if key == "escape" then
-			game_status.action = "pause"
-		end
-	elseif game_status.action == "pause" then
+	elseif game_status.menu == "pause" then
 		if key == "return" then
 			if game_status.selected_menu_item == 1 then
-				game_status.action = "play"
+				game_status.menu = "none"
 			elseif game_status.selected_menu_item == 2 then
 				game_status.selected_menu_item = 1
-				game_status.action = "quit"
+				game_status.menu = "quit"
 			end
 		elseif key == "escape" then
-			game_status.action = "play"
+			game_status.menu = "none"
 		elseif key == "up" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 2
@@ -79,17 +84,17 @@ function love.keypressed(key)
 				game_status.selected_menu_item = 1
 			end
 		end
-	elseif game_status.action == "quit" then
+	elseif game_status.menu == "quit" then
 		if key == "return" then
 			if game_status.selected_menu_item == 1 then
-				game_status.action = "pause"
+				game_status.menu = "pause"
 			elseif game_status.selected_menu_item == 2 then
 				love.event.quit()
 			end
 		elseif key == "y" then
 			love.event.quit()
 		elseif key == "escape" or key == "n" then
-			game_status.action = "pause"
+			game_status.menu = "pause"
 		elseif key == "up" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 2
@@ -108,11 +113,11 @@ end
 
 function love.quit()
 	-- deal with the player trying to quit the game
-	if game_status.action ~= "quit" then
+	if game_status.menu ~= "quit" then
 		-- don't quit
-		game_status.action = "quit"
+		game_status.menu = "quit"
 		return true
-	elseif game_status.action == "quit" then
+	elseif game_status.menu == "quit" then
 		-- completely quit the game
 		return false
 	end
@@ -172,42 +177,54 @@ function love.load()
 	
 	game_status.selector_x = math.floor(game_status.grid_size_x / 2)
 	game_status.selector_y = math.floor(game_status.grid_size_y / 2)
+	
+	game_status.action = "edit"
 end
 
 
 function love.update(dt)
-	if game_status.action == "play" then
-		-- affect the world
-		if game_status.timer >= 0 and game_status.timer < 1 then
-			game_status.timer = game_status.timer + dt
-		elseif game_status.timer >= 1 then
-			-- the cycle is complete
-			for row_index, row_contents in pairs(game_board) do
-				for column_index, tile_contents in pairs(game_board[row_index]) do
-					-- iterate over cells
+	if game_status.menu == "none" then
+		if game_status.action == "live" then
+			-- apply the rules affect the world
+			if game_status.timer >= 0 and game_status.timer < 1 then
+				game_status.timer = game_status.timer + dt
+			elseif game_status.timer >= 1 then
+				-- the cycle is complete
+				for row_index, row_contents in pairs(game_board) do
+					for column_index, tile_contents in pairs(game_board[row_index]) do
+						-- iterate over cells
+					end
 				end
+				game_status.timer = 0
 			end
-			game_status.timer = 0
+		elseif game_status.action == "edit" then
+			-- let the user place cells
 		end
 	end
 end
 
+
 function love.draw()
 	love.graphics.setFont(graphics.font)
 	
-	if game_status.action == "play" then
+	-- dim the screen if paused
+	if game_status.menu == "none" then
 		love.graphics.setColor(255, 255, 255, 255)
-	elseif game_status.action == "pause" or game_status.action == "quit" then
+	else
 		love.graphics.setColor(128, 128, 128, 255)
 	end
 	
+	-- draw the cell outlines
 	love.graphics.draw(graphics.cell_sprite_batch)
 	
-	love.graphics.draw(graphics.selected_cell, game_status.selector_x * 16 - 16, game_status.selector_y * 16 - 16)
+	-- show the cell selector if in edit mode
+	if game_status.action == "edit" then
+		love.graphics.draw(graphics.selected_cell, game_status.selector_x * 16 - 16, game_status.selector_y * 16 - 16)
+	end
 	
+	-- draw the cell contents
 	for row_index, row_contents in pairs(game_board) do
 		for column_index, cell_contents in pairs(game_board[row_index]) do
-			
 			if cell_contents.element == "none" then
 				-- leave the cell blank
 			elseif cell_contents.element == "air" then
@@ -225,29 +242,30 @@ function love.draw()
 	
 	love.graphics.setColor(255, 255, 255, 255)
 	
-	if game_status.action == "pause" then
+	-- draw menus
+	if game_status.menu == "pause" then
 		love.graphics.setColor(0, 0, 0, 192)
 		love.graphics.rectangle("fill", (love.graphics.getWidth() / 4), 96, (love.graphics.getWidth() / 2), 96)
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.printf( { {240, 240, 192, 255}, "SIMULATION PAUSED" }, 0, 114, (love.graphics.getWidth()), "center")
+		love.graphics.printf( { {240, 240, 160, 255}, "REACTION PAUSED" }, 0, 114, (love.graphics.getWidth()), "center")
 		if game_status.selected_menu_item == 1 then
-			love.graphics.printf( { {224, 255, 192, 255}, "▶RESUME" }, -5, 138, (love.graphics.getWidth()), "center")
+			love.graphics.printf( { {208, 255, 176, 255}, "▶RESUME" }, -5, 138, (love.graphics.getWidth()), "center")
 			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 156, (love.graphics.getWidth()), "center")
 		elseif game_status.selected_menu_item == 2 then
 			love.graphics.printf( { {208, 208, 208, 255}, "RESUME" }, 0, 138, (love.graphics.getWidth()), "center")
-			love.graphics.printf( { {224, 255, 192, 255}, "▶QUIT" }, -4, 156, (love.graphics.getWidth()), "center")
+			love.graphics.printf( { {208, 255, 176, 255}, "▶QUIT" }, -4, 156, (love.graphics.getWidth()), "center")
 		end
-	elseif game_status.action == "quit" then
+	elseif game_status.menu == "quit" then
 		love.graphics.setColor(0, 0, 0, 192)
 		love.graphics.rectangle("fill", (love.graphics.getWidth() / 4), 96, (love.graphics.getWidth() / 2), 96)
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.printf( { {240, 240, 192, 255}, "QUIT SIMULATION?" }, 0, 114, (love.graphics.getWidth()), "center")
+		love.graphics.printf( { {240, 240, 160, 255}, "QUIT REACTION?" }, 0, 114, (love.graphics.getWidth()), "center")
 		if game_status.selected_menu_item == 1 then
-			love.graphics.printf( { {224, 255, 192, 255}, "▶CANCEL" }, -5, 138, (love.graphics.getWidth()), "center")
+			love.graphics.printf( { {208, 255, 176, 255}, "▶CANCEL" }, -5, 138, (love.graphics.getWidth()), "center")
 			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 156, (love.graphics.getWidth()), "center")
 		elseif game_status.selected_menu_item == 2 then
 			love.graphics.printf( { {208, 208, 208, 255}, "CANCEL" }, 0, 138, (love.graphics.getWidth()), "center")
-			love.graphics.printf( { {224, 255, 192, 255}, "▶QUIT" }, -4, 156, (love.graphics.getWidth()), "center")
+			love.graphics.printf( { {208, 255, 176, 255}, "▶QUIT" }, -4, 156, (love.graphics.getWidth()), "center")
 		end
 	end
 end
