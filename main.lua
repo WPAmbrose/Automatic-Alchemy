@@ -24,36 +24,36 @@ graphics = {
 }
 
 
-function love.keypressed(key)
+function love.keypressed(key, scancode)
 	if game_status.menu == "none" then
 		if game_status.action == "edit" then
-			if key == "escape" then
+			if scancode == "escape" then
 				game_status.menu = "pause"
-			elseif key == "up" then
+			elseif scancode == "up" or scancode == "w" or scancode == "k" then
 				if game_status.selector_y > 1 then
 					game_status.selector_y = game_status.selector_y - 1
 				elseif game_status.selector_y <= 1 then
 					game_status.selector_y = game_status.grid_size_y
 				end
-			elseif key == "down" then
+			elseif scancode == "down" or scancode == "s" or scancode == "j" then
 				if game_status.selector_y < game_status.grid_size_y then
 					game_status.selector_y = game_status.selector_y + 1
 				elseif game_status.selector_y >= game_status.grid_size_y then
 					game_status.selector_y = 1
 				end
-			elseif key == "left" then
+			elseif scancode == "left" or scancode == "a" or scancode == "h" then
 				if game_status.selector_x > 1 then
 					game_status.selector_x = game_status.selector_x - 1
 				elseif game_status.selector_x <= 1 then
 					game_status.selector_x = game_status.grid_size_x
 				end
-			elseif key == "right" then
+			elseif scancode == "right" or scancode == "d" or scancode == "l" then
 				if game_status.selector_x < game_status.grid_size_x then
 					game_status.selector_x = game_status.selector_x + 1
 				elseif game_status.selector_x >= game_status.grid_size_x then
 					game_status.selector_x = 1
 				end
-			elseif key == "space" then
+			elseif scancode == "space" or scancode == "=" or scancode == "+" or scancode == "kp+" or scancode == "return" or scancode == "kpenter" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
@@ -85,29 +85,61 @@ function love.keypressed(key)
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
 				end
+			elseif scancode == "-" or scancode == "kp-" or scancode == "backspace" then
+				if game_board[game_status.selector_x][game_status.selector_y].element == "none" then
+					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
+				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
+					game_board[game_status.selector_x][game_status.selector_y].element = "air"
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
+				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
+					game_board[game_status.selector_x][game_status.selector_y].element = "water"
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
+					game_board[game_status.selector_x][game_status.selector_y].element = "earth"
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
+				elseif game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
+					game_board[game_status.selector_x][game_status.selector_y].element = "none"
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+				end
 			end
 		elseif game_status.action == "live" then
-			if key == "escape" then
+			if scancode == "escape" then
 				game_status.menu = "pause"
 			end
 		end
 	elseif game_status.menu == "pause" then
-		if key == "return" then
+		if scancode == "return" then
 			if game_status.selected_menu_item == 1 then
 				game_status.menu = "none"
 			elseif game_status.selected_menu_item == 2 then
 				game_status.selected_menu_item = 1
 				game_status.menu = "quit"
 			end
-		elseif key == "escape" then
+		elseif scancode == "escape" then
 			game_status.menu = "none"
-		elseif key == "up" then
+		elseif scancode == "up" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 2
 			elseif game_status.selected_menu_item == 2 then
 				game_status.selected_menu_item = 1
 			end
-		elseif key == "down" then
+		elseif scancode == "down" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 2
 			elseif game_status.selected_menu_item == 2 then
@@ -115,31 +147,31 @@ function love.keypressed(key)
 			end
 		end
 	elseif game_status.menu == "quit" then
-		if key == "return" then
+		if scancode == "return" then
 			if game_status.selected_menu_item == 1 then
 				game_status.menu = "pause"
 			elseif game_status.selected_menu_item == 2 then
 				love.event.quit()
 			end
-		elseif key == "y" then
-			love.event.quit()
-		elseif key == "escape" or key == "n" then
+		elseif scancode == "up" then
+			if game_status.selected_menu_item == 1 then
+				game_status.selected_menu_item = 2
+			elseif game_status.selected_menu_item == 2 then
+				game_status.selected_menu_item = 1
+			end
+		elseif scancode == "down" then
+			if game_status.selected_menu_item == 1 then
+				game_status.selected_menu_item = 2
+			elseif game_status.selected_menu_item == 2 then
+				game_status.selected_menu_item = 1
+			end
+		elseif scancode == "escape" or scancode == "backspace" then
+			game_status.selected_menu_item = 1
 			game_status.menu = "pause"
-		elseif key == "up" then
-			if game_status.selected_menu_item == 1 then
-				game_status.selected_menu_item = 2
-			elseif game_status.selected_menu_item == 2 then
-				game_status.selected_menu_item = 1
-			end
-		elseif key == "down" then
-			if game_status.selected_menu_item == 1 then
-				game_status.selected_menu_item = 2
-			elseif game_status.selected_menu_item == 2 then
-				game_status.selected_menu_item = 1
-			end
 		end
 	end
-end
+end -- love.keypressed
+
 
 function love.quit()
 	-- deal with the player trying to quit the game
@@ -209,7 +241,7 @@ function love.load()
 	game_status.selector_y = math.floor(game_status.grid_size_y / 2)
 	
 	game_status.action = "edit"
-end
+end -- love.load
 
 
 function love.update(dt)
@@ -277,7 +309,11 @@ function love.draw()
 		love.graphics.setColor(0, 0, 0, 192)
 		love.graphics.rectangle("fill", (love.graphics.getWidth() / 4), 96, (love.graphics.getWidth() / 2), 96)
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.printf( { {240, 240, 160, 255}, "REACTION PAUSED" }, 0, 114, (love.graphics.getWidth()), "center")
+		if game_status.action == "live" then
+			love.graphics.printf( { {240, 240, 160, 255}, "REACTION PAUSED" }, 0, 114, (love.graphics.getWidth()), "center")
+		elseif game_status.action == "edit" then
+			love.graphics.printf( { {240, 240, 160, 255}, "EDITING PAUSED" }, 0, 114, (love.graphics.getWidth()), "center")
+		end
 		if game_status.selected_menu_item == 1 then
 			love.graphics.printf( { {208, 255, 176, 255}, "▶RESUME" }, -5, 138, (love.graphics.getWidth()), "center")
 			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 156, (love.graphics.getWidth()), "center")
@@ -289,7 +325,7 @@ function love.draw()
 		love.graphics.setColor(0, 0, 0, 192)
 		love.graphics.rectangle("fill", (love.graphics.getWidth() / 4), 96, (love.graphics.getWidth() / 2), 96)
 		love.graphics.setColor(255, 255, 255, 255)
-		love.graphics.printf( { {240, 240, 160, 255}, "QUIT REACTION?" }, 0, 114, (love.graphics.getWidth()), "center")
+		love.graphics.printf( { {240, 240, 160, 255}, "QUIT SIMULATION?" }, 0, 114, (love.graphics.getWidth()), "center")
 		if game_status.selected_menu_item == 1 then
 			love.graphics.printf( { {208, 255, 176, 255}, "▶CANCEL" }, -5, 138, (love.graphics.getWidth()), "center")
 			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 156, (love.graphics.getWidth()), "center")
@@ -298,4 +334,4 @@ function love.draw()
 			love.graphics.printf( { {208, 255, 176, 255}, "▶QUIT" }, -4, 156, (love.graphics.getWidth()), "center")
 		end
 	end
-end
+end -- love.draw
