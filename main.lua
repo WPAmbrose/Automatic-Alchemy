@@ -4,6 +4,8 @@ game_status = {
 	selected_menu_item = 1,
 	selector_x = 1,
 	selector_y = 1,
+	grid_size_x = 0,
+	grid_size_y = 0,
 	timer = 0
 }
 
@@ -14,8 +16,6 @@ graphics = {
 	cell_sprite_batch = nil,
 	cell_quad = nil,
 	selected_cell = nil,
-	grid_size_x = 0,
-	grid_size_y = 0,
 	font = nil,
 	air = nil,
 	fire = nil,
@@ -53,7 +53,7 @@ function love.keypressed(key, scancode)
 				elseif game_status.selector_x >= game_status.grid_size_x then
 					game_status.selector_x = 1
 				end
-			elseif scancode == "space" or scancode == "=" or scancode == "+" or scancode == "kp+" or scancode == "return" or scancode == "kpenter" then
+			elseif scancode == "space" or scancode == "=" or scancode == "+" or scancode == "kp+" or scancode == "return" or scancode == "kpenter" or scancode == "pageup" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
@@ -85,7 +85,7 @@ function love.keypressed(key, scancode)
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
 				end
-			elseif scancode == "-" or scancode == "kp-" or scancode == "backspace" then
+			elseif scancode == "-" or scancode == "kp-" or scancode == "backspace" or scancode == "pagedown" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "none" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
@@ -128,6 +128,12 @@ function love.keypressed(key, scancode)
 			if game_status.selected_menu_item == 1 then
 				game_status.menu = "none"
 			elseif game_status.selected_menu_item == 2 then
+				if game_status.action == "edit" then
+					game_status.action = "live"
+				elseif game_status.action == "live" then
+					game_status.action = "edit"
+				end
+			elseif game_status.selected_menu_item == 3 then
 				game_status.selected_menu_item = 1
 				game_status.menu = "quit"
 			end
@@ -135,15 +141,15 @@ function love.keypressed(key, scancode)
 			game_status.menu = "none"
 		elseif scancode == "up" then
 			if game_status.selected_menu_item == 1 then
-				game_status.selected_menu_item = 2
-			elseif game_status.selected_menu_item == 2 then
-				game_status.selected_menu_item = 1
+				game_status.selected_menu_item = 3
+			else
+				game_status.selected_menu_item = game_status.selected_menu_item - 1
 			end
 		elseif scancode == "down" then
-			if game_status.selected_menu_item == 1 then
-				game_status.selected_menu_item = 2
-			elseif game_status.selected_menu_item == 2 then
+			if game_status.selected_menu_item == 3 then
 				game_status.selected_menu_item = 1
+			else
+				game_status.selected_menu_item = game_status.selected_menu_item + 1
 			end
 		end
 	elseif game_status.menu == "quit" then
@@ -247,14 +253,66 @@ end -- love.load
 function love.update(dt)
 	if game_status.menu == "none" then
 		if game_status.action == "live" then
-			-- apply the rules affect the world
+			-- apply the rules to affect the world
 			if game_status.timer >= 0 and game_status.timer < 1 then
 				game_status.timer = game_status.timer + dt
 			elseif game_status.timer >= 1 then
 				-- the cycle is complete
 				for row_index, row_contents in pairs(game_board) do
-					for column_index, tile_contents in pairs(game_board[row_index]) do
+					for column_index, cell_contents in pairs(game_board[row_index]) do
 						-- iterate over cells
+						if row_index > 1 then
+							if game_board[row_index - 1][column_index].element == "fire" then
+								
+							elseif game_board[row_index - 1][column_index].element == "earth" then
+								
+							elseif game_board[row_index - 1][column_index].element == "air" then
+								
+							elseif game_board[row_index - 1][column_index].element == "water" then
+								
+							end
+						else
+							
+						end
+						if row_index < game_status.grid_size_x then
+							if game_board[row_index + 1][column_index].element == "fire" then
+								
+							elseif game_board[row_index + 1][column_index].element == "earth" then
+								
+							elseif game_board[row_index + 1][column_index].element == "air" then
+								
+							elseif game_board[row_index + 1][column_index].element == "water" then
+								
+							end
+						else
+							
+						end
+						if column_index > 1 then
+							if game_board[row_index][column_index - 1].element == "fire" then
+								
+							elseif game_board[row_index][column_index - 1].element == "earth" then
+								
+							elseif game_board[row_index][column_index - 1].element == "air" then
+								
+							elseif game_board[row_index][column_index - 1].element == "water" then
+								
+							end
+						else
+							
+						end
+						if column_index < game_status.grid_size_y then
+							if game_board[row_index][column_index + 1].element == "fire" then
+								
+							elseif game_board[row_index][column_index + 1].element == "earth" then
+								
+							elseif game_board[row_index][column_index + 1].element == "air" then
+								
+							elseif game_board[row_index][column_index + 1].element == "water" then
+								
+							end
+						else
+							
+						end
 					end
 				end
 				game_status.timer = 0
@@ -307,7 +365,7 @@ function love.draw()
 	-- draw menus
 	if game_status.menu == "pause" then
 		love.graphics.setColor(0, 0, 0, 192)
-		love.graphics.rectangle("fill", (love.graphics.getWidth() / 4), 96, (love.graphics.getWidth() / 2), 96)
+		love.graphics.rectangle("fill", (love.graphics.getWidth() / 4), 96, (love.graphics.getWidth() / 2), 114)
 		love.graphics.setColor(255, 255, 255, 255)
 		if game_status.action == "live" then
 			love.graphics.printf( { {240, 240, 160, 255}, "REACTION PAUSED" }, 0, 114, (love.graphics.getWidth()), "center")
@@ -316,10 +374,28 @@ function love.draw()
 		end
 		if game_status.selected_menu_item == 1 then
 			love.graphics.printf( { {208, 255, 176, 255}, "▶RESUME" }, -5, 138, (love.graphics.getWidth()), "center")
-			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 156, (love.graphics.getWidth()), "center")
+			if game_status.action == "edit" then
+				love.graphics.printf( { {208, 208, 208, 255}, "START REACTION" }, 0, 156, (love.graphics.getWidth()), "center")
+			elseif game_status.action == "live" then
+				love.graphics.printf( { {208, 208, 208, 255}, "ENTER EDIT MODE" }, 0, 156, (love.graphics.getWidth()), "center")
+			end
+			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 174, (love.graphics.getWidth()), "center")
 		elseif game_status.selected_menu_item == 2 then
 			love.graphics.printf( { {208, 208, 208, 255}, "RESUME" }, 0, 138, (love.graphics.getWidth()), "center")
-			love.graphics.printf( { {208, 255, 176, 255}, "▶QUIT" }, -4, 156, (love.graphics.getWidth()), "center")
+			if game_status.action == "edit" then
+				love.graphics.printf( { {208, 255, 176, 255}, "▶START REACTION" }, -4, 156, (love.graphics.getWidth()), "center")
+			elseif game_status.action == "live" then
+				love.graphics.printf( { {208, 255, 176, 255}, "▶ENTER EDIT MODE" }, -4, 156, (love.graphics.getWidth()), "center")
+			end
+			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 174, (love.graphics.getWidth()), "center")
+		elseif game_status.selected_menu_item == 3 then
+			love.graphics.printf( { {208, 208, 208, 255}, "RESUME" }, 0, 138, (love.graphics.getWidth()), "center")
+			if game_status.action == "edit" then
+				love.graphics.printf( { {208, 208, 208, 255}, "START REACTION" }, 0, 156, (love.graphics.getWidth()), "center")
+			elseif game_status.action == "live" then
+				love.graphics.printf( { {208, 208, 208, 255}, "ENTER EDIT MODE" }, 0, 156, (love.graphics.getWidth()), "center")
+			end
+			love.graphics.printf( { {208, 255, 176, 255}, "▶QUIT" }, -4, 174, (love.graphics.getWidth()), "center")
 		end
 	elseif game_status.menu == "quit" then
 		love.graphics.setColor(0, 0, 0, 192)
