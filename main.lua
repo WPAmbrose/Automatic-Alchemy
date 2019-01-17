@@ -219,19 +219,19 @@ function love.load()
 					wet = 0
 				}
 			}
-			if row == 2 then
+			if row == 4 and (column >= 8 or column <= 3) then
 				game_board[row][column].element = "fire"
 				game_board[row][column].aspects.hot = 4
 				game_board[row][column].aspects.dry = 4
-			elseif row == 4 then
+			elseif row == 7 and (column >= 13 or column <= 8) then
 				game_board[row][column].element = "earth"
 				game_board[row][column].aspects.dry = 4
 				game_board[row][column].aspects.cold = 4
-			elseif row == 6 then
+			elseif row == 10 and (column >= 15 or column <= 10) then
 				game_board[row][column].element = "water"
 				game_board[row][column].aspects.cold = 4
 				game_board[row][column].aspects.wet = 4
-			elseif row == 8 then
+			elseif row == 13 and (column >= 18 or column <= 13) then
 				game_board[row][column].element = "air"
 				game_board[row][column].aspects.wet = 4
 				game_board[row][column].aspects.hot = 4
@@ -261,57 +261,73 @@ function love.update(dt)
 				for row_index, row_contents in pairs(game_board) do
 					for column_index, cell_contents in pairs(game_board[row_index]) do
 						-- iterate over cells
+						local neighbors = {
+							left_cell = {},
+							right_cell = {},
+							top_cell = {},
+							bottom_cell = {}
+						}
 						if row_index > 1 then
-							if game_board[row_index - 1][column_index].element == "fire" then
-								
-							elseif game_board[row_index - 1][column_index].element == "earth" then
-								
-							elseif game_board[row_index - 1][column_index].element == "air" then
-								
-							elseif game_board[row_index - 1][column_index].element == "water" then
-								
-							end
-						else
-							
+							neighbors.left_cell = game_board[row_index - 1][column_index]
+						elseif row_index == 1 then
+							neighbors.left_cell = game_board[game_status.grid_size_x][column_index]
 						end
 						if row_index < game_status.grid_size_x then
-							if game_board[row_index + 1][column_index].element == "fire" then
-								
-							elseif game_board[row_index + 1][column_index].element == "earth" then
-								
-							elseif game_board[row_index + 1][column_index].element == "air" then
-								
-							elseif game_board[row_index + 1][column_index].element == "water" then
-								
-							end
-						else
-							
+							neighbors.right_cell = game_board[row_index + 1][column_index]
+						elseif row_index == game_status.grid_size_x then
+							neighbors.right_cell = game_board[1][column_index]
 						end
 						if column_index > 1 then
-							if game_board[row_index][column_index - 1].element == "fire" then
-								
-							elseif game_board[row_index][column_index - 1].element == "earth" then
-								
-							elseif game_board[row_index][column_index - 1].element == "air" then
-								
-							elseif game_board[row_index][column_index - 1].element == "water" then
-								
-							end
-						else
-							
+							neighbors.top_cell = game_board[row_index][column_index - 1]
+						elseif column_index == 1 then
+							neighbors.top_cell = game_board[row_index][game_status.grid_size_y]
 						end
 						if column_index < game_status.grid_size_y then
-							if game_board[row_index][column_index + 1].element == "fire" then
-								
-							elseif game_board[row_index][column_index + 1].element == "earth" then
-								
-							elseif game_board[row_index][column_index + 1].element == "air" then
-								
-							elseif game_board[row_index][column_index + 1].element == "water" then
-								
+							neighbors.bottom_cell = game_board[row_index][column_index + 1]
+						elseif column_index == game_status.grid_size_y then
+							neighbors.bottom_cell = game_board[row_index][1]
+						end
+						for neighbor_name, neighbor_contents in pairs(neighbors) do
+							if neighbor_contents.element == "fire" then
+								cell_contents.aspects.dry = cell_contents.aspects.dry + 1
+								cell_contents.aspects.hot = cell_contents.aspects.hot + 1
+								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
+								cell_contents.aspects.cold = cell_contents.aspects.cold / 2
+							elseif neighbor_contents.element == "air" then
+								cell_contents.aspects.hot = cell_contents.aspects.hot + 1
+								cell_contents.aspects.wet = cell_contents.aspects.wet + 1
+								cell_contents.aspects.cold = cell_contents.aspects.cold / 2
+								cell_contents.aspects.dry = cell_contents.aspects.dry / 2
+							elseif neighbor_contents.element == "water" then
+								cell_contents.aspects.wet = cell_contents.aspects.wet + 1
+								cell_contents.aspects.cold = cell_contents.aspects.cold + 1
+								cell_contents.aspects.dry = cell_contents.aspects.dry / 2
+								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
+							elseif neighbor_contents.element == "earth" then
+								cell_contents.aspects.cold = cell_contents.aspects.cold + 1
+								cell_contents.aspects.dry = cell_contents.aspects.dry + 1
+								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
+								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
 							end
-						else
-							
+						end
+						
+						for name, aspect in pairs(cell_contents.aspects) do
+							if aspect > 4 then
+								aspect = 4
+							elseif aspect < 0 then
+								aspect = 0
+							end
+							aspect = math.floor(aspect + 0.5)
+						end
+						
+						if cell_contents.aspects.hot > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.wet <= 2 and cell_contents.aspects.cold <= 2 then
+							cell_contents.element = "fire"
+						elseif cell_contents.aspects.hot > 2 and cell_contents.aspects.wet > 2 and cell_contents.aspects.cold <= 2 and cell_contents.aspects.dry <= 2 then
+							cell_contents.element = "air"
+						elseif cell_contents.aspects.cold > 2 and cell_contents.aspects.wet > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.dry <= 2 then
+							cell_contents.element = "water"
+						elseif cell_contents.aspects.cold > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.wet <= 2 then
+							cell_contents.element = "earth"
 						end
 					end
 				end
@@ -385,7 +401,7 @@ function love.draw()
 			if game_status.action == "edit" then
 				love.graphics.printf( { {208, 255, 176, 255}, "▶START REACTION" }, -4, 156, (love.graphics.getWidth()), "center")
 			elseif game_status.action == "live" then
-				love.graphics.printf( { {208, 255, 176, 255}, "▶ENTER EDIT MODE" }, -4, 156, (love.graphics.getWidth()), "center")
+				love.graphics.printf( { {208, 255, 176, 255}, "▶ENTER EDIT MODE" }, -5, 156, (love.graphics.getWidth()), "center")
 			end
 			love.graphics.printf( { {208, 208, 208, 255}, "QUIT" }, 0, 174, (love.graphics.getWidth()), "center")
 		elseif game_status.selected_menu_item == 3 then
