@@ -6,7 +6,16 @@ game_status = {
 	selector_y = 1,
 	grid_size_x = 0,
 	grid_size_y = 0,
-	timer = 0
+	timer = 0,
+	current_cell = {
+		element = "none",
+		aspects = {
+			hot = 0,
+			dry = 0,
+			cold = 0,
+			wet = 0
+		}
+	}
 }
 
 game_board = {}
@@ -219,19 +228,19 @@ function love.load()
 					wet = 0
 				}
 			}
-			if row == 4 and (column >= 8 or column <= 3) then
+			if row == 6 and (column >= 10 or column <= 4) then
 				game_board[row][column].element = "fire"
 				game_board[row][column].aspects.hot = 4
 				game_board[row][column].aspects.dry = 4
-			elseif row == 7 and (column >= 13 or column <= 8) then
+			elseif row == 10 and (column >= 13 or column <= 7) then
 				game_board[row][column].element = "earth"
 				game_board[row][column].aspects.dry = 4
 				game_board[row][column].aspects.cold = 4
-			elseif row == 10 and (column >= 15 or column <= 10) then
+			elseif row == 14 and (column >= 16 or column <= 10) then
 				game_board[row][column].element = "water"
 				game_board[row][column].aspects.cold = 4
 				game_board[row][column].aspects.wet = 4
-			elseif row == 13 and (column >= 18 or column <= 13) then
+			elseif row == 18 and (column >= 19 or column <= 13) then
 				game_board[row][column].element = "air"
 				game_board[row][column].aspects.wet = 4
 				game_board[row][column].aspects.hot = 4
@@ -309,6 +318,14 @@ function love.update(dt)
 								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
 								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
 							end
+						end
+						
+						if cell_contents.aspects.hot >= 4 and cell_contents.aspects.cold >= 4 then
+							cell_contents.aspects.hot = cell_contents.aspects.hot - (cell_contents.aspects.hot / 3)
+							cell_contents.aspects.cold = cell_contents.aspects.cold - (cell_contents.aspects.cold / 2)
+						elseif cell_contents.aspects.wet >= 4 and cell_contents.aspects.dry >= 4 then
+							cell_contents.aspects.wet = cell_contents.aspects.wet - (cell_contents.aspects.wet / 3.5)
+							cell_contents.aspects.dry = cell_contents.aspects.dry - (cell_contents.aspects.dry / 2)
 						end
 						
 						if cell_contents.aspects.hot > 4 then
