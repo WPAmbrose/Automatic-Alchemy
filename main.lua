@@ -311,6 +311,20 @@ function love.update(dt)
 							end
 						end
 						
+						if cell_contents.aspects.hot > 4 then
+							cell_contents.aspects.cold = cell_contents.aspects.cold - 1
+							cell_contents.aspects.hot = 4
+						elseif cell_contents.aspects.cold > 4 then
+							cell_contents.aspects.hot = cell_contents.aspects.hot - 1
+							cell_contents.aspects.cold = 4
+						elseif cell_contents.aspects.wet > 4 then
+							cell_contents.aspects.dry = cell_contents.aspects.dry - 1
+							cell_contents.aspects.wet = 4
+						elseif cell_contents.aspects.dry > 4 then
+							cell_contents.aspects.wet = cell_contents.aspects.wet - 1
+							cell_contents.aspects.dry = 4	
+						end
+						
 						for name, aspect in pairs(cell_contents.aspects) do
 							if aspect > 4 then
 								aspect = 4
