@@ -6,16 +6,7 @@ game_status = {
 	selector_y = 1,
 	grid_size_x = 0,
 	grid_size_y = 0,
-	timer = 0,
-	current_cell = {
-		element = "none",
-		aspects = {
-			hot = 0,
-			dry = 0,
-			cold = 0,
-			wet = 0
-		}
-	}
+	timer = 0
 }
 
 game_board = {}
@@ -67,64 +58,64 @@ function love.keypressed(key, scancode)
 					game_board[game_status.selector_x][game_status.selector_y].element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "air"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "none"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "none" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "earth"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 				end
 			elseif scancode == "-" or scancode == "kp-" or scancode == "backspace" or scancode == "pagedown" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "none" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "air"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "earth"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
 					game_board[game_status.selector_x][game_status.selector_y].element = "none"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 0
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 0
+					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				end
 			end
 		elseif game_status.action == "live" then
@@ -222,10 +213,10 @@ function love.load()
 			game_board[row][column] = {
 				element = "none",
 				aspects = {
-					hot = 0,
-					dry = 0,
-					cold = 0,
-					wet = 0
+					hot = 1,
+					dry = 1,
+					cold = 1,
+					wet = 1
 				}
 			}
 			if row == 6 and (column >= 10 or column <= 4) then
@@ -276,6 +267,7 @@ function love.update(dt)
 							top_cell = {},
 							bottom_cell = {}
 						}
+						
 						if row_index > 1 then
 							neighbors.left_cell = game_board[row_index - 1][column_index]
 						elseif row_index == 1 then
@@ -296,25 +288,26 @@ function love.update(dt)
 						elseif column_index == game_status.grid_size_y then
 							neighbors.bottom_cell = game_board[row_index][1]
 						end
+						
 						for neighbor_name, neighbor_contents in pairs(neighbors) do
 							if neighbor_contents.element == "fire" then
-								cell_contents.aspects.dry = cell_contents.aspects.dry + 1
-								cell_contents.aspects.hot = cell_contents.aspects.hot + 1
+								cell_contents.aspects.dry = cell_contents.aspects.dry + (1 / 4)
+								cell_contents.aspects.hot = cell_contents.aspects.hot + (1 / 4)
 								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
 								cell_contents.aspects.cold = cell_contents.aspects.cold / 2
 							elseif neighbor_contents.element == "air" then
-								cell_contents.aspects.hot = cell_contents.aspects.hot + 1
-								cell_contents.aspects.wet = cell_contents.aspects.wet + 1
+								cell_contents.aspects.hot = cell_contents.aspects.hot + (1 / 4)
+								cell_contents.aspects.wet = cell_contents.aspects.wet + (1 / 4)
 								cell_contents.aspects.cold = cell_contents.aspects.cold / 2
 								cell_contents.aspects.dry = cell_contents.aspects.dry / 2
 							elseif neighbor_contents.element == "water" then
-								cell_contents.aspects.wet = cell_contents.aspects.wet + 1
-								cell_contents.aspects.cold = cell_contents.aspects.cold + 1
+								cell_contents.aspects.wet = cell_contents.aspects.wet + (1 / 4)
+								cell_contents.aspects.cold = cell_contents.aspects.cold + (1 / 4)
 								cell_contents.aspects.dry = cell_contents.aspects.dry / 2
 								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
 							elseif neighbor_contents.element == "earth" then
-								cell_contents.aspects.cold = cell_contents.aspects.cold + 1
-								cell_contents.aspects.dry = cell_contents.aspects.dry + 1
+								cell_contents.aspects.cold = cell_contents.aspects.cold + (1 / 4)
+								cell_contents.aspects.dry = cell_contents.aspects.dry + (1 / 4)
 								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
 								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
 							end
@@ -324,41 +317,41 @@ function love.update(dt)
 							cell_contents.aspects.hot = cell_contents.aspects.hot - (cell_contents.aspects.hot / 3)
 							cell_contents.aspects.cold = cell_contents.aspects.cold - (cell_contents.aspects.cold / 2)
 						elseif cell_contents.aspects.wet >= 4 and cell_contents.aspects.dry >= 4 then
-							cell_contents.aspects.wet = cell_contents.aspects.wet - (cell_contents.aspects.wet / 3.5)
+							cell_contents.aspects.wet = cell_contents.aspects.wet - (cell_contents.aspects.wet / 3)
 							cell_contents.aspects.dry = cell_contents.aspects.dry - (cell_contents.aspects.dry / 2)
 						end
 						
 						if cell_contents.aspects.hot > 4 then
-							cell_contents.aspects.cold = cell_contents.aspects.cold - 1
+							cell_contents.aspects.cold = cell_contents.aspects.cold - 2
 							cell_contents.aspects.hot = 4
 						elseif cell_contents.aspects.cold > 4 then
-							cell_contents.aspects.hot = cell_contents.aspects.hot - 1
+							cell_contents.aspects.hot = cell_contents.aspects.hot - 2
 							cell_contents.aspects.cold = 4
 						elseif cell_contents.aspects.wet > 4 then
-							cell_contents.aspects.dry = cell_contents.aspects.dry - 1
+							cell_contents.aspects.dry = cell_contents.aspects.dry - 2
 							cell_contents.aspects.wet = 4
 						elseif cell_contents.aspects.dry > 4 then
-							cell_contents.aspects.wet = cell_contents.aspects.wet - 1
+							cell_contents.aspects.wet = cell_contents.aspects.wet - 2
 							cell_contents.aspects.dry = 4	
 						end
 						
 						for name, aspect in pairs(cell_contents.aspects) do
+							aspect = math.floor(aspect + 0.5)
 							if aspect > 4 then
 								aspect = 4
-							elseif aspect < 0 then
-								aspect = 0
+							elseif aspect < 1 then
+								aspect = 1
 							end
-							aspect = math.floor(aspect + 0.5)
 						end
 						
-						if cell_contents.aspects.hot > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.wet <= 2 and cell_contents.aspects.cold <= 2 then
+						if cell_contents.aspects.cold > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.wet <= 2 then
+							cell_contents.element = "earth"
+						elseif cell_contents.aspects.hot > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.wet <= 2 and cell_contents.aspects.cold <= 2 then
 							cell_contents.element = "fire"
 						elseif cell_contents.aspects.hot > 2 and cell_contents.aspects.wet > 2 and cell_contents.aspects.cold <= 2 and cell_contents.aspects.dry <= 2 then
 							cell_contents.element = "air"
 						elseif cell_contents.aspects.cold > 2 and cell_contents.aspects.wet > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.dry <= 2 then
-							cell_contents.element = "water"
-						elseif cell_contents.aspects.cold > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.wet <= 2 then
-							cell_contents.element = "earth"
+							cell_contents.element = "water"						
 						end
 					end
 				end
