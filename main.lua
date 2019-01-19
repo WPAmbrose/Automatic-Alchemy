@@ -261,32 +261,42 @@ function love.update(dt)
 				for row_index, row_contents in pairs(game_board) do
 					for column_index, cell_contents in pairs(game_board[row_index]) do
 						-- iterate over cells
+						
+						-- set up useful shortcuts to data
 						local neighbors = {
+							top_cell = {},
+							bottom_cell = {},
 							left_cell = {},
 							right_cell = {},
-							top_cell = {},
-							bottom_cell = {}
+							top_left_cell = {},
+							top_right_cell = {},
+							bottom_left_cell = {},
+							bottom_right_cell = {}
 						}
+						local top_free = column_index > 1
+						local bottom_free = column_index < game_status.grid_size_y
+						local left_free = row_index > 1
+						local right_free = row_index < game_status.grid_size_x
 						
-						if row_index > 1 then
-							neighbors.left_cell = game_board[row_index - 1][column_index]
-						elseif row_index == 1 then
-							neighbors.left_cell = game_board[game_status.grid_size_x][column_index]
-						end
-						if row_index < game_status.grid_size_x then
-							neighbors.right_cell = game_board[row_index + 1][column_index]
-						elseif row_index == game_status.grid_size_x then
-							neighbors.right_cell = game_board[1][column_index]
-						end
-						if column_index > 1 then
+						if top_free then
 							neighbors.top_cell = game_board[row_index][column_index - 1]
-						elseif column_index == 1 then
+						else
 							neighbors.top_cell = game_board[row_index][game_status.grid_size_y]
 						end
-						if column_index < game_status.grid_size_y then
+						if bottom_free then
 							neighbors.bottom_cell = game_board[row_index][column_index + 1]
-						elseif column_index == game_status.grid_size_y then
+						else
 							neighbors.bottom_cell = game_board[row_index][1]
+						end
+						if left_free then
+							neighbors.left_cell = game_board[row_index - 1][column_index]
+						else
+							neighbors.left_cell = game_board[game_status.grid_size_x][column_index]
+						end
+						if right_free then
+							neighbors.right_cell = game_board[row_index + 1][column_index]
+						else
+							neighbors.right_cell = game_board[1][column_index]
 						end
 						
 						for neighbor_name, neighbor_contents in pairs(neighbors) do
