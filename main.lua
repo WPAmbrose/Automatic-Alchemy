@@ -278,26 +278,40 @@ function love.update(dt)
 						local left_free = row_index > 1
 						local right_free = row_index < game_status.grid_size_x
 						
+						local top_reference = 0
+						local bottom_reference = 0
+						local left_reference = 0
+						local right_reference = 0
+						
 						if top_free then
-							neighbors.top_cell = game_board[row_index][column_index - 1]
+							top_reference = column_index - 1
 						else
-							neighbors.top_cell = game_board[row_index][game_status.grid_size_y]
+							top_reference = game_status.grid_size_y
 						end
 						if bottom_free then
-							neighbors.bottom_cell = game_board[row_index][column_index + 1]
+							bottom_reference = column_index + 1
 						else
-							neighbors.bottom_cell = game_board[row_index][1]
+							bottom_reference = 1
 						end
 						if left_free then
-							neighbors.left_cell = game_board[row_index - 1][column_index]
+							left_reference = row_index - 1
 						else
-							neighbors.left_cell = game_board[game_status.grid_size_x][column_index]
+							left_reference = game_status.grid_size_x
 						end
 						if right_free then
-							neighbors.right_cell = game_board[row_index + 1][column_index]
+							right_reference = row_index + 1
 						else
-							neighbors.right_cell = game_board[1][column_index]
+							right_reference = 1
 						end
+						
+						neighbors.top_cell = game_board[row_index][top_reference]
+						neighbors.bottom_cell = game_board[row_index][bottom_reference]
+						neighbors.left_cell = game_board[left_reference][column_index]
+						neighbors.left_cell = game_board[right_reference][column_index]
+						neighbors.top_left_cell = game_board[left_reference][top_reference]
+						neighbors.bottom_left_cell = game_board[left_reference][bottom_reference]
+						neighbors.top_right_cell = game_board[right_reference][top_reference]
+						neighbors.bottom_right_cell = game_board[right_reference][bottom_reference]
 						
 						for neighbor_name, neighbor_contents in pairs(neighbors) do
 							if neighbor_contents.element == "fire" then
