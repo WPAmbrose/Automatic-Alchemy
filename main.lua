@@ -139,6 +139,7 @@ function love.keypressed(key, scancode)
 			end
 		elseif scancode == "escape" then
 			game_status.menu = "none"
+			game_status.selected_menu_item = 1
 		elseif scancode == "up" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 3
@@ -307,7 +308,7 @@ function love.update(dt)
 						neighbors.top_cell = game_board[row_index][top_reference]
 						neighbors.bottom_cell = game_board[row_index][bottom_reference]
 						neighbors.left_cell = game_board[left_reference][column_index]
-						neighbors.left_cell = game_board[right_reference][column_index]
+						neighbors.right_cell = game_board[right_reference][column_index]
 						neighbors.top_left_cell = game_board[left_reference][top_reference]
 						neighbors.bottom_left_cell = game_board[left_reference][bottom_reference]
 						neighbors.top_right_cell = game_board[right_reference][top_reference]
@@ -337,14 +338,6 @@ function love.update(dt)
 							end
 						end
 						
-						if cell_contents.aspects.hot >= 4 and cell_contents.aspects.cold >= 4 then
-							cell_contents.aspects.hot = cell_contents.aspects.hot - (cell_contents.aspects.hot / 3)
-							cell_contents.aspects.cold = cell_contents.aspects.cold - (cell_contents.aspects.cold / 2)
-						elseif cell_contents.aspects.wet >= 4 and cell_contents.aspects.dry >= 4 then
-							cell_contents.aspects.wet = cell_contents.aspects.wet - (cell_contents.aspects.wet / 3)
-							cell_contents.aspects.dry = cell_contents.aspects.dry - (cell_contents.aspects.dry / 2)
-						end
-						
 						if cell_contents.aspects.hot > 4 then
 							cell_contents.aspects.cold = cell_contents.aspects.cold - 2
 							cell_contents.aspects.hot = 4
@@ -356,7 +349,7 @@ function love.update(dt)
 							cell_contents.aspects.wet = 4
 						elseif cell_contents.aspects.dry > 4 then
 							cell_contents.aspects.wet = cell_contents.aspects.wet - 2
-							cell_contents.aspects.dry = 4	
+							cell_contents.aspects.dry = 4
 						end
 						
 						for name, aspect in pairs(cell_contents.aspects) do
