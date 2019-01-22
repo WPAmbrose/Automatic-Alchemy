@@ -255,9 +255,9 @@ function love.update(dt)
 	if game_status.menu == "none" then
 		if game_status.action == "live" then
 			-- apply the rules to affect the world
-			if game_status.timer >= 0 and game_status.timer < 1 then
+			if game_status.timer >= 0 and game_status.timer < 0.65 then
 				game_status.timer = game_status.timer + dt
-			elseif game_status.timer >= 1 then
+			elseif game_status.timer >= 0.65 then
 				-- the cycle is complete
 				for row_index, row_contents in pairs(game_board) do
 					for column_index, cell_contents in pairs(game_board[row_index]) do
@@ -315,40 +315,55 @@ function love.update(dt)
 						neighbors.bottom_right_cell = game_board[right_reference][bottom_reference]
 						
 						for neighbor_name, neighbor_contents in pairs(neighbors) do
-							if neighbor_contents.element == "fire" then
-								cell_contents.aspects.dry = cell_contents.aspects.dry + (1 / 4)
-								cell_contents.aspects.hot = cell_contents.aspects.hot + (1 / 4)
-								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
-								cell_contents.aspects.cold = cell_contents.aspects.cold / 2
-							elseif neighbor_contents.element == "air" then
-								cell_contents.aspects.hot = cell_contents.aspects.hot + (1 / 4)
-								cell_contents.aspects.wet = cell_contents.aspects.wet + (1 / 4)
-								cell_contents.aspects.cold = cell_contents.aspects.cold / 2
-								cell_contents.aspects.dry = cell_contents.aspects.dry / 2
-							elseif neighbor_contents.element == "water" then
-								cell_contents.aspects.wet = cell_contents.aspects.wet + (1 / 4)
-								cell_contents.aspects.cold = cell_contents.aspects.cold + (1 / 4)
-								cell_contents.aspects.dry = cell_contents.aspects.dry / 2
-								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
-							elseif neighbor_contents.element == "earth" then
-								cell_contents.aspects.cold = cell_contents.aspects.cold + (1 / 4)
-								cell_contents.aspects.dry = cell_contents.aspects.dry + (1 / 4)
-								cell_contents.aspects.hot = cell_contents.aspects.hot / 2
-								cell_contents.aspects.wet = cell_contents.aspects.wet / 2
+							for name, aspect in pairs(neighbor_contents.aspects) do
+								if aspect >= 4 then
+									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 4)
+									if name == "hot" then
+										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 4)
+									elseif name == "cold" then
+										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 4)
+									elseif name == "wet" then
+										cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 4)
+									elseif name == "dry" then
+										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 4)
+									end
+								elseif aspect == 3 then
+									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 8)
+									if name == "hot" then
+										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 8)
+									elseif name == "cold" then
+										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 8)
+									elseif name == "wet" then
+										cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 8)
+									elseif name == "dry" then
+										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 8)
+									end
+								elseif aspect == 2 then
+									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 16)
+									if name == "hot" then
+										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 16)
+									elseif name == "cold" then
+										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 16)
+									elseif name == "wet" then
+										cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 16)
+									elseif name == "dry" then
+										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 16)
+									end
+								end
 							end
 						end
 						
 						if cell_contents.aspects.hot > 4 then
-							cell_contents.aspects.cold = cell_contents.aspects.cold - 2
+							cell_contents.aspects.cold = cell_contents.aspects.cold - 1
 							cell_contents.aspects.hot = 4
 						elseif cell_contents.aspects.cold > 4 then
-							cell_contents.aspects.hot = cell_contents.aspects.hot - 2
+							cell_contents.aspects.hot = cell_contents.aspects.hot - 1
 							cell_contents.aspects.cold = 4
 						elseif cell_contents.aspects.wet > 4 then
-							cell_contents.aspects.dry = cell_contents.aspects.dry - 2
+							cell_contents.aspects.dry = cell_contents.aspects.dry - 1
 							cell_contents.aspects.wet = 4
 						elseif cell_contents.aspects.dry > 4 then
-							cell_contents.aspects.wet = cell_contents.aspects.wet - 2
+							cell_contents.aspects.wet = cell_contents.aspects.wet - 1
 							cell_contents.aspects.dry = 4
 						end
 						
