@@ -6,6 +6,7 @@ game_status = {
 	selector_y = 1,
 	grid_size_x = 0,
 	grid_size_y = 0,
+	current_element = nil,
 	timer = 0
 }
 
@@ -29,88 +30,106 @@ function love.keypressed(key, scancode)
 		if game_status.action == "edit" then
 			if scancode == "escape" then
 				game_status.menu = "pause"
-			elseif scancode == "up" or scancode == "w" or scancode == "k" then
+			elseif key == "up" or scancode == "w" or scancode == "k" then
 				if game_status.selector_y > 1 then
 					game_status.selector_y = game_status.selector_y - 1
 				elseif game_status.selector_y <= 1 then
 					game_status.selector_y = game_status.grid_size_y
 				end
-			elseif scancode == "down" or scancode == "s" or scancode == "j" then
+			elseif key == "down" or scancode == "s" or scancode == "j" then
 				if game_status.selector_y < game_status.grid_size_y then
 					game_status.selector_y = game_status.selector_y + 1
 				elseif game_status.selector_y >= game_status.grid_size_y then
 					game_status.selector_y = 1
 				end
-			elseif scancode == "left" or scancode == "a" or scancode == "h" then
+			elseif key == "left" or scancode == "a" or scancode == "h" then
 				if game_status.selector_x > 1 then
 					game_status.selector_x = game_status.selector_x - 1
 				elseif game_status.selector_x <= 1 then
 					game_status.selector_x = game_status.grid_size_x
 				end
-			elseif scancode == "right" or scancode == "d" or scancode == "l" then
+			elseif key == "right" or scancode == "d" or scancode == "l" then
 				if game_status.selector_x < game_status.grid_size_x then
 					game_status.selector_x = game_status.selector_x + 1
 				elseif game_status.selector_x >= game_status.grid_size_x then
 					game_status.selector_x = 1
 				end
-			elseif scancode == "space" or scancode == "=" or scancode == "+" or scancode == "kp+" or scancode == "return" or scancode == "kpenter" or scancode == "pageup" then
+			elseif key == "space" or scancode == "=" or scancode == "+" or scancode == "kp+" or key == "return" or scancode == "kpenter" or scancode == "pageup" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
+					game_status.current_element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
+					game_status.current_element = "air"
 					game_board[game_status.selector_x][game_status.selector_y].element = "air"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
+					game_status.current_element = "fire"
 					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
+					game_status.current_element = "none"
 					game_board[game_status.selector_x][game_status.selector_y].element = "none"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "none" then
-					game_board[game_status.selector_x][game_status.selector_y].element = "earth"
+					if game_status.current_element == "none" then
+						game_status.current_element = "earth"
+						game_board[game_status.selector_x][game_status.selector_y].element = "earth"
+					else
+						game_board[game_status.selector_x][game_status.selector_y].element = game_status.current_element
+					end
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 				end
-			elseif scancode == "-" or scancode == "kp-" or scancode == "backspace" or scancode == "pagedown" then
+			elseif scancode == "-" or scancode == "kp-" or key == "backspace" or scancode == "pagedown" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "none" then
-					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
+					if game_status.current_element == "none" then
+						game_status.current_element = "fire"
+						game_board[game_status.selector_x][game_status.selector_y].element = "fire"
+					else
+						game_board[game_status.selector_x][game_status.selector_y].element = game_status.current_element
+					end
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
+					game_status.current_element = "air"
 					game_board[game_status.selector_x][game_status.selector_y].element = "air"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
+					game_status.current_element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].element = "water"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
+					game_status.current_element = "earth"
 					game_board[game_status.selector_x][game_status.selector_y].element = "earth"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
 					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
+					game_status.current_element = "none"
 					game_board[game_status.selector_x][game_status.selector_y].element = "none"
 					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
@@ -154,25 +173,25 @@ function love.keypressed(key, scancode)
 			end
 		end
 	elseif game_status.menu == "quit" then
-		if scancode == "return" then
+		if key == "return" then
 			if game_status.selected_menu_item == 1 then
 				game_status.menu = "pause"
 			elseif game_status.selected_menu_item == 2 then
 				love.event.quit()
 			end
-		elseif scancode == "up" then
+		elseif key == "up" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 2
 			elseif game_status.selected_menu_item == 2 then
 				game_status.selected_menu_item = 1
 			end
-		elseif scancode == "down" then
+		elseif key == "down" then
 			if game_status.selected_menu_item == 1 then
 				game_status.selected_menu_item = 2
 			elseif game_status.selected_menu_item == 2 then
 				game_status.selected_menu_item = 1
 			end
-		elseif scancode == "escape" or scancode == "backspace" then
+		elseif key == "escape" or key == "backspace" then
 			game_status.selected_menu_item = 1
 			game_status.menu = "pause"
 		end
@@ -247,6 +266,8 @@ function love.load()
 	game_status.selector_x = math.floor(game_status.grid_size_x / 2)
 	game_status.selector_y = math.floor(game_status.grid_size_y / 2)
 	
+	game_status.current_element = "earth"
+	
 	game_status.action = "edit"
 end -- love.load
 
@@ -320,10 +341,10 @@ function love.update(dt)
 									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 4)
 									if name == "hot" then
 										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 4)
-									elseif name == "cold" then
-										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 4)
 									elseif name == "wet" then
 										cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 4)
+									elseif name == "cold" then
+										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 4)
 									elseif name == "dry" then
 										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 4)
 									end
@@ -331,10 +352,10 @@ function love.update(dt)
 									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 8)
 									if name == "hot" then
 										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 8)
-									elseif name == "cold" then
-										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 8)
 									elseif name == "wet" then
 										cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 8)
+									elseif name == "cold" then
+										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 8)
 									elseif name == "dry" then
 										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 8)
 									end
@@ -342,10 +363,10 @@ function love.update(dt)
 									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 16)
 									if name == "hot" then
 										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 16)
-									elseif name == "cold" then
-										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 16)
 									elseif name == "wet" then
 										cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 16)
+									elseif name == "cold" then
+										cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 16)
 									elseif name == "dry" then
 										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 16)
 									end
