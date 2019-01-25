@@ -234,27 +234,35 @@ function love.load()
 				element = "none",
 				aspects = {
 					hot = 1,
-					dry = 1,
+					wet = 1,
 					cold = 1,
-					wet = 1
+					dry = 1
 				}
 			}
-			if row == 6 and (column >= 10 or column <= 4) then
+			if (row == 6 or row == 7) and (column >= 4 and column <= 10) then
 				game_board[row][column].element = "fire"
 				game_board[row][column].aspects.hot = 4
 				game_board[row][column].aspects.dry = 4
-			elseif row == 10 and (column >= 13 or column <= 7) then
+				game_board[row][column].aspects.cold = 1
+				game_board[row][column].aspects.wet = 1
+			elseif (row == 10 or row == 11) and (column >= 7 and column <= 13) then
 				game_board[row][column].element = "earth"
 				game_board[row][column].aspects.dry = 4
 				game_board[row][column].aspects.cold = 4
-			elseif row == 14 and (column >= 16 or column <= 10) then
+				game_board[row][column].aspects.wet = 1
+				game_board[row][column].aspects.hot = 1
+			elseif (row == 14 or row == 15) and (column >= 10 and column <= 16) then
 				game_board[row][column].element = "water"
 				game_board[row][column].aspects.cold = 4
 				game_board[row][column].aspects.wet = 4
-			elseif row == 18 and (column >= 19 or column <= 13) then
+				game_board[row][column].aspects.hot = 1
+				game_board[row][column].aspects.dry = 1
+			elseif (row == 18 or row == 19) and (column >= 13 and column <= 19) then
 				game_board[row][column].element = "air"
 				game_board[row][column].aspects.wet = 4
 				game_board[row][column].aspects.hot = 4
+				game_board[row][column].aspects.dry = 1
+				game_board[row][column].aspects.cold = 1
 			end
 			graphics.cell_sprite_batch:add(graphics.cell_quad, (row * 16) - 16, (column * 16) - 16)
 		end
@@ -374,18 +382,19 @@ function love.update(dt)
 							end
 						end
 						
-						if cell_contents.aspects.hot > 4 then
-							cell_contents.aspects.cold = cell_contents.aspects.cold - 1
-							cell_contents.aspects.hot = 4
-						elseif cell_contents.aspects.cold > 4 then
-							cell_contents.aspects.hot = cell_contents.aspects.hot - 1
+						
+						if cell_contents.aspects.cold > 4 then
+							cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 4)
 							cell_contents.aspects.cold = 4
 						elseif cell_contents.aspects.wet > 4 then
-							cell_contents.aspects.dry = cell_contents.aspects.dry - 1
+							cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 4)
 							cell_contents.aspects.wet = 4
 						elseif cell_contents.aspects.dry > 4 then
-							cell_contents.aspects.wet = cell_contents.aspects.wet - 1
+							cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 4)
 							cell_contents.aspects.dry = 4
+						elseif cell_contents.aspects.hot > 4 then
+							cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 4)
+							cell_contents.aspects.hot = 4
 						end
 						
 						for name, aspect in pairs(cell_contents.aspects) do
@@ -397,14 +406,15 @@ function love.update(dt)
 							end
 						end
 						
-						if cell_contents.aspects.cold > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.wet <= 2 then
-							cell_contents.element = "earth"
-						elseif cell_contents.aspects.hot > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.wet <= 2 and cell_contents.aspects.cold <= 2 then
+						
+						if cell_contents.aspects.hot > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.wet <= 2 and cell_contents.aspects.cold <= 2 then
 							cell_contents.element = "fire"
 						elseif cell_contents.aspects.hot > 2 and cell_contents.aspects.wet > 2 and cell_contents.aspects.cold <= 2 and cell_contents.aspects.dry <= 2 then
 							cell_contents.element = "air"
 						elseif cell_contents.aspects.cold > 2 and cell_contents.aspects.wet > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.dry <= 2 then
-							cell_contents.element = "water"						
+							cell_contents.element = "water"
+						elseif cell_contents.aspects.cold > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.hot <= 2 and cell_contents.aspects.wet <= 2 then
+							cell_contents.element = "earth"
 						end
 					end
 				end
