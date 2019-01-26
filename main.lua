@@ -24,6 +24,39 @@ graphics = {
 	water = nil
 }
 
+function place_element(element)
+	if element == "earth" then
+		game_board[game_status.selector_x][game_status.selector_y].element = "earth"
+		game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+	elseif element == "water" then
+		game_board[game_status.selector_x][game_status.selector_y].element = "water"
+		game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+	elseif element == "air" then
+		game_board[game_status.selector_x][game_status.selector_y].element = "air"
+		game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+	elseif element == "fire" then
+		game_board[game_status.selector_x][game_status.selector_y].element = "fire"
+		game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
+		game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+	elseif element == "none" then
+		game_board[game_status.selector_x][game_status.selector_y].element = "none"
+		game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
+		game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
+	end
+end
 
 function love.keypressed(key, scancode)
 	if game_status.menu == "none" then
@@ -57,85 +90,37 @@ function love.keypressed(key, scancode)
 			elseif key == "space" or scancode == "=" or scancode == "+" or scancode == "kp+" or key == "return" or scancode == "kpenter" or scancode == "pageup" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
 					game_status.current_element = "water"
-					game_board[game_status.selector_x][game_status.selector_y].element = "water"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
 					game_status.current_element = "air"
-					game_board[game_status.selector_x][game_status.selector_y].element = "air"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
 					game_status.current_element = "fire"
-					game_board[game_status.selector_x][game_status.selector_y].element = "fire"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
 					game_status.current_element = "none"
-					game_board[game_status.selector_x][game_status.selector_y].element = "none"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "none" then
 					if game_status.current_element == "none" then
 						game_status.current_element = "earth"
-						game_board[game_status.selector_x][game_status.selector_y].element = "earth"
 					else
-						game_board[game_status.selector_x][game_status.selector_y].element = game_status.current_element
+						-- keep the current element
 					end
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 				end
+				place_element(game_status.current_element)
 			elseif scancode == "-" or scancode == "kp-" or key == "backspace" or scancode == "pagedown" then
 				if game_board[game_status.selector_x][game_status.selector_y].element == "none" then
 					if game_status.current_element == "none" then
 						game_status.current_element = "fire"
-						game_board[game_status.selector_x][game_status.selector_y].element = "fire"
 					else
-						game_board[game_status.selector_x][game_status.selector_y].element = game_status.current_element
+						-- keep the current element
 					end
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "fire" then
 					game_status.current_element = "air"
-					game_board[game_status.selector_x][game_status.selector_y].element = "air"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "air" then
 					game_status.current_element = "water"
-					game_board[game_status.selector_x][game_status.selector_y].element = "water"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "water" then
 					game_status.current_element = "earth"
-					game_board[game_status.selector_x][game_status.selector_y].element = "earth"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 4
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
 				elseif game_board[game_status.selector_x][game_status.selector_y].element == "earth" then
 					game_status.current_element = "none"
-					game_board[game_status.selector_x][game_status.selector_y].element = "none"
-					game_board[game_status.selector_x][game_status.selector_y].aspects.hot = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.dry = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.cold = 1
-					game_board[game_status.selector_x][game_status.selector_y].aspects.wet = 1
 				end
+				place_element(game_status.current_element)
 			end
 		elseif game_status.action == "live" then
 			if scancode == "escape" then
