@@ -4,6 +4,7 @@ game_status = {
 	selected_menu_item = 1,
 	selector_x = 1,
 	selector_y = 1,
+	selector_style = "a",
 	grid_size_x = 0,
 	grid_size_y = 0,
 	current_element = nil,
@@ -16,7 +17,8 @@ graphics = {
 	cell = nil,
 	cell_sprite_batch = nil,
 	cell_quad = nil,
-	selected_cell = nil,
+	selected_cell_a = nil,
+	selected_cell_b = nil,
 	font = nil,
 	air = nil,
 	fire = nil,
@@ -134,6 +136,7 @@ function love.keypressed(key, scancode)
 			elseif game_status.selected_menu_item == 2 then
 				if game_status.action == "edit" then
 					game_status.action = "live"
+					game_status.timer = 0
 				elseif game_status.action == "live" then
 					game_status.action = "edit"
 				end
@@ -201,7 +204,8 @@ function love.load()
 	love.graphics.setBackgroundColor(32, 32, 32)
 	
 	graphics.cell = love.graphics.newImage("assets/cell.png")
-	graphics.selected_cell = love.graphics.newImage("assets/selected_cell.png")
+	graphics.selected_cell_a = love.graphics.newImage("assets/selected_cell_a.png")
+	graphics.selected_cell_b = love.graphics.newImage("assets/selected_cell_b.png")
 	graphics.air = love.graphics.newImage("assets/air.png")
 	graphics.fire = love.graphics.newImage("assets/fire.png")
 	graphics.earth = love.graphics.newImage("assets/earth.png")
@@ -267,12 +271,12 @@ end -- love.load
 
 function love.update(dt)
 	if game_status.menu == "none" then
-		if game_status.action == "live" then
-			-- apply the rules to affect the world
-			if game_status.timer >= 0 and game_status.timer < 0.65 then
-				game_status.timer = game_status.timer + dt
-			elseif game_status.timer >= 0.65 then
-				-- the cycle is complete
+		if game_status.timer >= 0 and game_status.timer < 0.65 then
+			game_status.timer = game_status.timer + dt
+		elseif game_status.timer >= 0.65 then
+			-- the cycle is complete
+			if game_status.action == "live" then
+				-- apply the rules to affect the world
 				for row_index, row_contents in pairs(game_board) do
 					for column_index, cell_contents in pairs(game_board[row_index]) do
 						-- iterate over cells
@@ -403,10 +407,15 @@ function love.update(dt)
 						end
 					end
 				end
-				game_status.timer = 0
+			elseif game_status.action == "edit" then
+				-- let the user place cells
+				if game_status.selector_style == "a" then
+					game_status.selector_style = "b"
+				elseif game_status.selector_style == "b" then
+					game_status.selector_style = "a"
+				end
 			end
-		elseif game_status.action == "edit" then
-			-- let the user place cells
+			game_status.timer = 0
 		end
 	end
 end
@@ -427,7 +436,11 @@ function love.draw()
 	
 	-- show the cell selector if in edit mode
 	if game_status.action == "edit" then
-		love.graphics.draw(graphics.selected_cell, game_status.selector_x * 16 - 16, game_status.selector_y * 16 - 16)
+		if game_status.selector_style == "a" then
+			love.graphics.draw(graphics.selected_cell_a, game_status.selector_x * 16 - 16, game_status.selector_y * 16 - 16)
+		elseif game_status.selector_style == "b" then
+			love.graphics.draw(graphics.selected_cell_b, game_status.selector_x * 16 - 16, game_status.selector_y * 16 - 16)
+		end
 	end
 	
 	-- draw the cell contents
