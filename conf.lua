@@ -3,7 +3,7 @@ function love.conf(t)
 	t.version = "0.10.2"
 	t.window.width = 480
 	t.window.height = 320
-	t.console = false
+	t.console = true
 	t.modules.physics = false
 	t.modules.mouse = false
 	t.modules.joystick = false

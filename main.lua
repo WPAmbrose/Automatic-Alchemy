@@ -199,6 +199,16 @@ function love.quit()
 	end
 end
 
+function love.focus(focused_on_game)
+	-- this function is called when the OS's focus is put on the game and when focus is taken away;
+	-- this includes minimizing and un-minimizing the simulation
+	
+	if not focused_on_game and game_status.action ~= "pause" then
+		-- pause the simulation if the user switches away from it and it's not already paused
+		game_status.menu = "pause"
+		game_status.selected_menu_item = 1
+	end
+end
 
 function love.load()
 	love.graphics.setBackgroundColor(32, 32, 32)
@@ -292,15 +302,16 @@ function love.update(dt)
 							bottom_left_cell = {},
 							bottom_right_cell = {}
 						}
-						local top_free = column_index > 1
-						local bottom_free = column_index < game_status.grid_size_y
-						local left_free = row_index > 1
-						local right_free = row_index < game_status.grid_size_x
-						
 						local top_reference = 0
 						local bottom_reference = 0
 						local left_reference = 0
 						local right_reference = 0
+						
+						-- do some initial processing
+						local top_free = column_index > 1
+						local bottom_free = column_index < game_status.grid_size_y
+						local left_free = row_index > 1
+						local right_free = row_index < game_status.grid_size_x
 						
 						if top_free then
 							top_reference = column_index - 1
@@ -332,6 +343,7 @@ function love.update(dt)
 						neighbors.top_right_cell = game_board[right_reference][top_reference]
 						neighbors.bottom_right_cell = game_board[right_reference][bottom_reference]
 						
+						-- iterate over each neighbor and apply effects based on its aspects
 						for neighbor_name, neighbor_contents in pairs(neighbors) do
 							for name, aspect in pairs(neighbor_contents.aspects) do
 								if aspect >= 4 then
@@ -374,23 +386,45 @@ function love.update(dt)
 						
 						if cell_contents.aspects.cold > 4 then
 							cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 4)
-							cell_contents.aspects.cold = 4
+							if cell_contents.aspects.cold >= 4.75 then
+								cell_contents.aspects.cold = 1
+							elseif cell_contents.aspects.cold >= 4.5 and cell_contents.aspects.cold < 4.75 then
+								cell_contents.aspects.cold = 2
+							elseif cell_contents.aspects.cold >= 4.25 and cell_contents.aspects.cold < 4.5 then
+								cell_contents.aspects.cold = 3
+							end
 						elseif cell_contents.aspects.wet > 4 then
 							cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 4)
-							cell_contents.aspects.wet = 4
+							if cell_contents.aspects.wet >= 4.75 then
+								cell_contents.aspects.wet = 1
+							elseif cell_contents.aspects.wet >= 4.5 and cell_contents.aspects.wet < 4.75 then
+								cell_contents.aspects.wet = 2
+							elseif cell_contents.aspects.wet >= 4.25 and cell_contents.aspects.wet < 4.5 then
+								cell_contents.aspects.wet = 3
+							end
 						elseif cell_contents.aspects.dry > 4 then
 							cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 4)
-							cell_contents.aspects.dry = 4
+							if cell_contents.aspects.dry >= 4.75 then
+								cell_contents.aspects.dry = 1
+							elseif cell_contents.aspects.dry >= 4.5 and cell_contents.aspects.dry < 4.75 then
+								cell_contents.aspects.dry = 2
+							elseif cell_contents.aspects.dry >= 4.25 and cell_contents.aspects.dry < 4.5 then
+								cell_contents.aspects.dry = 3
+							end
 						elseif cell_contents.aspects.hot > 4 then
 							cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 4)
-							cell_contents.aspects.hot = 4
+							if cell_contents.aspects.hot >= 4.75 then
+								cell_contents.aspects.hot = 1
+							elseif cell_contents.aspects.hot >= 4.5 and cell_contents.aspects.hot < 4.75 then
+								cell_contents.aspects.hot = 2
+							elseif cell_contents.aspects.hot >= 4.25 and cell_contents.aspects.hot < 4.5 then
+								cell_contents.aspects.hot = 3
+							end
 						end
 						
 						for name, aspect in pairs(cell_contents.aspects) do
 							aspect = math.floor(aspect + 0.5)
-							if aspect > 4 then
-								aspect = 4
-							elseif aspect < 1 then
+							if aspect < 1 then
 								aspect = 1
 							end
 						end
