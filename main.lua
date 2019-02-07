@@ -281,9 +281,9 @@ end -- love.load
 
 function love.update(dt)
 	if game_status.menu == "none" then
-		if game_status.timer >= 0 and game_status.timer < 0.65 then
+		if game_status.timer >= 0 and game_status.timer < 0.50 then
 			game_status.timer = game_status.timer + dt
-		elseif game_status.timer >= 0.65 then
+		elseif game_status.timer >= 0.50 then
 			-- the cycle is complete
 			if game_status.action == "live" then
 				-- apply the rules to affect the world
@@ -302,6 +302,7 @@ function love.update(dt)
 							bottom_left_cell = {},
 							bottom_right_cell = {}
 						}
+						
 						local top_reference = 0
 						local bottom_reference = 0
 						local left_reference = 0
@@ -343,6 +344,14 @@ function love.update(dt)
 						neighbors.top_right_cell = game_board[right_reference][top_reference]
 						neighbors.bottom_right_cell = game_board[right_reference][bottom_reference]
 						
+						local neighbor_count = {
+							fire = 0,
+							air = 0,
+							water = 0,
+							earth = 0,
+							none = 0
+						}
+						
 						-- iterate over each neighbor and apply effects based on its aspects
 						for neighbor_name, neighbor_contents in pairs(neighbors) do
 							for name, aspect in pairs(neighbor_contents.aspects) do
@@ -357,7 +366,7 @@ function love.update(dt)
 									elseif name == "dry" then
 										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 4)
 									end
-								elseif aspect == 3 then
+								elseif aspect >= 3 and aspect < 4 then
 									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 8)
 									if name == "hot" then
 										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 8)
@@ -368,7 +377,7 @@ function love.update(dt)
 									elseif name == "dry" then
 										cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 8)
 									end
-								elseif aspect == 2 then
+								elseif aspect >= 2 and aspect < 3 then
 									cell_contents.aspects[name] = cell_contents.aspects[name] + (1 / 16)
 									if name == "hot" then
 										cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 16)
@@ -381,54 +390,29 @@ function love.update(dt)
 									end
 								end
 							end
+							neighbor_count[neighbor_contents.element] = neighbor_count[neighbor_contents.element] + 1
 						end
 						
-						
-						if cell_contents.aspects.cold > 4 then
-							cell_contents.aspects.hot = cell_contents.aspects.hot - (1 / 4)
-							if cell_contents.aspects.cold >= 4.75 then
-								cell_contents.aspects.cold = 1
-							elseif cell_contents.aspects.cold >= 4.5 and cell_contents.aspects.cold < 4.75 then
-								cell_contents.aspects.cold = 2
-							elseif cell_contents.aspects.cold >= 4.25 and cell_contents.aspects.cold < 4.5 then
-								cell_contents.aspects.cold = 3
-							end
-						elseif cell_contents.aspects.wet > 4 then
-							cell_contents.aspects.dry = cell_contents.aspects.dry - (1 / 4)
-							if cell_contents.aspects.wet >= 4.75 then
-								cell_contents.aspects.wet = 1
-							elseif cell_contents.aspects.wet >= 4.5 and cell_contents.aspects.wet < 4.75 then
-								cell_contents.aspects.wet = 2
-							elseif cell_contents.aspects.wet >= 4.25 and cell_contents.aspects.wet < 4.5 then
-								cell_contents.aspects.wet = 3
-							end
-						elseif cell_contents.aspects.dry > 4 then
-							cell_contents.aspects.wet = cell_contents.aspects.wet - (1 / 4)
-							if cell_contents.aspects.dry >= 4.75 then
-								cell_contents.aspects.dry = 1
-							elseif cell_contents.aspects.dry >= 4.5 and cell_contents.aspects.dry < 4.75 then
-								cell_contents.aspects.dry = 2
-							elseif cell_contents.aspects.dry >= 4.25 and cell_contents.aspects.dry < 4.5 then
-								cell_contents.aspects.dry = 3
-							end
-						elseif cell_contents.aspects.hot > 4 then
-							cell_contents.aspects.cold = cell_contents.aspects.cold - (1 / 4)
-							if cell_contents.aspects.hot >= 4.75 then
-								cell_contents.aspects.hot = 1
-							elseif cell_contents.aspects.hot >= 4.5 and cell_contents.aspects.hot < 4.75 then
-								cell_contents.aspects.hot = 2
-							elseif cell_contents.aspects.hot >= 4.25 and cell_contents.aspects.hot < 4.5 then
-								cell_contents.aspects.hot = 3
-							end
+						if cell_contents.element == "earth" and neighbor_count.earth == 8 then
+							cell_contents.aspects.cold = 2
+							cell_contents.aspects.dry = 2
+						elseif cell_contents.element == "water" and neighbor_count.water == 8 then
+							cell_contents.aspects.wet = 2
+							cell_contents.aspects.cold = 2
+						elseif cell_contents.element == "air" and neighbor_count.air == 8 then
+							cell_contents.aspects.hot = 2
+							cell_contents.aspects.wet = 2
+						elseif cell_contents.element == "fire" and neighbor_count.fire == 8 then
+							cell_contents.aspects.dry = 2
+							cell_contents.aspects.hot = 2
 						end
 						
 						for name, aspect in pairs(cell_contents.aspects) do
-							aspect = math.floor(aspect + 0.5)
+							-- aspect = math.floor(aspect + 0.5)
 							if aspect < 1 then
 								aspect = 1
 							end
 						end
-						
 						
 						if cell_contents.aspects.hot > 2 and cell_contents.aspects.dry > 2 and cell_contents.aspects.wet <= 2 and cell_contents.aspects.cold <= 2 then
 							cell_contents.element = "fire"
